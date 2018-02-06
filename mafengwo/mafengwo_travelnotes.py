@@ -4,8 +4,8 @@
 # @Email:  seektolive@gmail.com
 # @FD:	马蜂窝游记爬取练习
 # @Date:   2018-02-06 09:58:06
-# @Last Modified by:   xwren
-# @Last Modified time: 2018-02-06 14:46:55
+# @Last Modified by:   renxuewu
+# @Last Modified time: 2018-02-06 14:54:51
 
 ''' 网站结构分析
 1、网站所有的游记都位于WWW.mafengwo.cn/mdd下，并且是按城市分类的。
@@ -28,6 +28,7 @@
 	http://www.mafengwo.cn/yj/13033/1-0-2000.html 该筛选条件下暂时没有数据
 5、游记具体信息（在列表中有具体游记的超链接）
 	http://www.mafengwo.cn/i/3540745.html
+	test
 '''
 import requests
 import re
