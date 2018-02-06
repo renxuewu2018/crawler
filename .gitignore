@@ -104,5 +104,4 @@ ENV/
 *.html
 
 # bat
-*.bat
 *.bak
