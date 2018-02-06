@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Author: xwren
-# @Email:  seektolive@gmail.com
+# @Author: renxuewu
+# @Email:  renxuewu#hotmail.com
 # @FD:	马蜂窝游记爬取练习
 # @Date:   2018-02-06 09:58:06
 # @Last Modified by:   renxuewu
-# @Last Modified time: 2018-02-06 14:54:51
+# @Last Modified time: 2018-02-06 15:22:13
 
 ''' 网站结构分析
 1、网站所有的游记都位于WWW.mafengwo.cn/mdd下，并且是按城市分类的。
@@ -57,7 +57,7 @@ def save_travelnote_page(filename,page):
 url_ids = []
 # 下载游记
 def download_travelnote_page(url_id):
-	for page_num in range(1,2):
+	for page_num in range(1,200): # 目前马蜂窝只显示前200页的数据
 		city_travelnote_url = 'http://www.mafengwo.cn/yj/%s/1-0-%d.html' %(url_id,page_num)
 		if url_id in url_ids:
 			continue
