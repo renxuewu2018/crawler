@@ -102,3 +102,7 @@ ENV/
 
 # html
 *.html
+
+# bat
+*.bat
+*.bak

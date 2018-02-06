@@ -1,6 +1,6 @@
 @echo off
 
-git status && git add * && git commit -m "update" && git ps
+git st && git add * && git cm "update" && git ps
 
 rem "done"
 pause
