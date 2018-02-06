@@ -1,0 +1,6 @@
+@echo off
+
+git status && git add * && git commit -m "update" && git push
+
+rem "done"
+pause
