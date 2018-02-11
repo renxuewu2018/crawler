@@ -105,3 +105,6 @@ ENV/
 
 # bat
 *.bak
+
+# exe
+*.exe
