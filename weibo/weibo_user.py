@@ -5,7 +5,7 @@
 # @FD:	使用selenium + phantomjs 获取微博用户
 # @Date:   2018-02-09 10:39:51
 # @Last Modified by:   renxuewu
-# @Last Modified time: 2018-02-11 17:16:07
+# @Last Modified time: 2018-02-11 17:24:04
 
 
 # 获取微博用户信息 TODO
@@ -45,7 +45,7 @@ seed_user_url =  'https://weibo.com/xiena'
 bloom = BloomFilter(max_elements=100000, error_rate=0.1)
 cur_queue = deque()
 
-username = '' # test uname
+username = '' # test uname 1
 password = '' # test pwd  error
 
 user_agent = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4)'+
