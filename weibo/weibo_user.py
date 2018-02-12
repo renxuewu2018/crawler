@@ -5,7 +5,7 @@
 # @FD:	使用selenium + phantomjs 获取微博用户
 # @Date:   2018-02-09 10:39:51
 # @Last Modified by:   renxuewu
-# @Last Modified time: 2018-02-11 17:24:04
+# @Last Modified time: 2018-02-12 15:48:12
 
 
 # 获取微博用户信息 TODO
@@ -54,10 +54,12 @@ dcap = dict(DesiredCapabilities.PHANTOMJS)
 dcap['phantomjs.page.settings.userAgent']=user_agent
 
 
-feeds_crawler = webdriver.PhantomJS(desired_capabilities=dcap)
+# feeds_crawler = webdriver.PhantomJS(desired_capabilities=dcap)
+feeds_crawler = webdriver.Chrome(desired_capabilities=dcap)
 feeds_crawler.set_window_size(1920,1200)
 
-user_crawler = webdriver.PhantomJS(desired_capabilities=dcap)
+user_crawler = webdriver.Chrome(desired_capabilities=dcap)
+# user_crawler = webdriver.PhantomJS(desired_capabilities=dcap)
 user_crawler.set_window_size(1920,1200)
 
 # log config
@@ -158,21 +160,54 @@ def scroll_to_botton():
 			feeds_crawler.find_element_by_link_text('点击重新载入').click()
 		time.sleep(1)
 
+
+# page next S_txt1 S_line1
+def next_page(cur_driver):
+	try:
+		nextpage = cur_driver.find_element_by_xpath('//a[contains(@class, "page next")]').get_attribute('href')
+		logging.info("next page is "+nextpage)
+		cur_driver.get(nextpage)
+		time.sleep(4)
+		return True
+	except Exception as e:
+		logging.debug("next page is not found"+e)
+		return False
+	except Error as error:
+		return False
+
+
 # 获取用户关注列表（目前微博只能查看前5页的用户列表-20180211）
+min_mblogs_allowed = 100
+max_follow_fans_ratio_allowed = 3
 def extract_user(users):
 	for i in range(0,5):
 		# feeds #follow_item S_line2
-		user_list = user_crawler.find_elements_by_xpath('//*[@id="Pl_Official_HisRelation__58"]/div/div/div/div[2]/div[1]/ul/li')
-		print(user_list)
-		for element in user_list:
-			tried = 0
-			while tried < 10:
-				try:
-					user = {}
-					user['name'] = element.find_element_by_xpath('.//div[contains(@class,"info_name"]/a').text
-					print(user['name'])
-				except Exception as e:
-					raise e
+		user_list = user_crawler.find_elements_by_xpath("//li[@action-type='itemClick']")
+		for user_element in user_list:
+			try:
+				user = {}
+				user['follows'] = re.findall('(\d+)', user_element.find_element_by_xpath('.//div[@class="info_connect"]/span').text)[0]
+				user['follows_link'] = user_element.find_element_by_xpath('.//div[@class="info_connect"]/span//a').get_attribute('href')
+				user['fans'] = re.findall('(\d+)', user_element.find_elements_by_xpath('.//div[@class="info_connect"]/span')[1].text)[0]
+				user['fans_link'] = user_element.find_elements_by_xpath('.//div[@class="info_connect"]/span//a')[1].get_attribute('href')
+				user['mblogs'] = re.findall('(\d+)', user_element.find_elements_by_xpath('.//div[@class="info_connect"]/span')[2].text)[0]
+				user_link = user_element.find_element_by_xpath('.//div[contains(@class,"info_name")]/a')
+				user['link'] = re.findall('(.+)\?', user_link.get_attribute('href'))[0]
+				if user['link'][:4] != 'http':
+					user['link'] = domain + user['link']
+				user['name'] = user_link.text
+				user['icon'] = re.findall('/([^/]+)$', user_element.find_element_by_xpath('.//dt[@class="mod_pic"]/a/img').get_attribute('src'))[0]
+				print(user['name'],user['follows'],user['mblogs'])
+				if int(user['mblogs']) < min_mblogs_allowed or int(user['follows'])/int(user['fans']) > max_follow_fans_ratio_allowed:
+					break
+				
+				enqueue_url(user['link'])
+				users.append(user)
+			except Exception as e:
+				wait()
+		if next_page(user_crawler) is False:
+			return users
+
 
 
 # 获取用户信息
@@ -190,13 +225,15 @@ def get_user(user_link):
 
 	# 提取关注列表url
 	watch_list_link = get_element_by_xpath(feeds_crawler,'//a[@class="t_link S_txt1"]')[0].get('href')
+	# https://weibo.com/p/1003061192329374/follow?from=page_100306&wvr=6&mod=headfollow#place
 
 	logging.info('account_name'+account_name)
 	logging.info('wait_list_link'+watch_list_link)
 
 	print(account_name,watch_list_link)
 
-	user_crawler.get(watch_list_link)
+	watch_list_link_url = "https:"+watch_list_link
+	user_crawler.get(watch_list_link_url)
 
 	feeds = []
 	users = []
@@ -222,7 +259,6 @@ def get_element_by_xpath(cur_driver,path):
 			wait()
 			continue
 		return element
-	pass
 
 # 爬取数据
 def crawler():
